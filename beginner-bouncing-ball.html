@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="從零開始製作 Canvas 霓虹彈跳球遊戲的逐步教學。">
+  <title>霓虹彈跳球實作｜前端新手村</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">前端新手村</a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">選單</button>
+    <nav id="site-nav" class="site-nav" aria-label="主要導覽">
+      <a href="index.html">課程首頁</a><a href="beginner-html.html">HTML</a><a href="beginner-css.html">CSS</a><a href="beginner-javascript.html">JavaScript</a><a href="beginner-git.html">Git 與 GitHub</a><a href="beginner-deploy.html">網站發布</a><a href="beginner-snake.html">貪食蛇實作</a><a aria-current="page" href="beginner-bouncing-ball.html">彈跳球實作</a><a href="beginner-card.html">翻牌配對</a><a href="beginner-zombie.html">殭屍閃避</a>
+    </nav>
+  </header>
+
+  <main class="lesson-layout">
+    <aside class="lesson-sidebar">
+      <strong>實作步驟</strong>
+      <nav><a href="#goal">遊戲拆解</a><a href="#canvas">1. 建立畫布</a><a href="#ball">2. 畫出球體</a><a href="#move">3. 移動動畫</a><a href="#walls">4. 邊界反彈</a><a href="#paddle">5. 控制擋板</a><a href="#bricks">6. 目標方塊</a><a href="#effects">7. 視覺效果</a><a href="#finish">8. 完整成品</a></nav>
+    </aside>
+
+    <article>
+      <header class="lesson-title">
+        <p class="eyebrow">Project 02・Canvas 動畫</p>
+        <h1>霓虹彈跳球</h1>
+        <p>從一顆靜止的圓開始，逐步加入移動、反彈、擋板、目標、計分與霓虹效果，最後組成完整遊戲。</p>
+        <div class="project-actions"><a class="button" href="bouncing%20ball/ball.html" target="_blank" rel="noopener">直接玩完整成品</a><a class="button secondary" href="#canvas">從第一步開始</a></div>
+      </header>
+
+      <section id="goal" class="lesson-card">
+        <span class="step-label">開始之前</span><h2>先把遊戲拆成小零件</h2>
+        <div class="concept-grid"><div><strong>Canvas</strong>顯示背景、球、擋板與目標。</div><div><strong>座標與速度</strong>決定球下一幀的位置。</div><div><strong>碰撞判定</strong>在接觸邊界或物件時反轉方向。</div><div><strong>動畫迴圈</strong>持續更新資料並重新繪圖。</div></div>
+        <p>專案由兩個檔案組成：</p><div class="file-tree">bouncing ball/
+├── ball.html　　畫面、樣式與 Canvas
+└── content.js　 動畫、碰撞與繪圖</div>
+      </section>
+
+      <section id="canvas" class="lesson-card">
+        <span class="step-label">步驟 1</span><h2>建立響應式 Canvas</h2>
+        <p>Canvas 的 <code class="inline-code">width</code> 與 <code class="inline-code">height</code> 是內部繪圖座標；CSS 的寬度則控制它在螢幕上的顯示大小。</p>
+        <pre><code>&lt;canvas id="myCanvas" width="960" height="600"&gt;&lt;/canvas&gt;
+&lt;script src="content.js"&gt;&lt;/script&gt;</code></pre>
+        <pre><code>canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #080c1e;
+}</code></pre>
+        <p class="tip">這樣桌機仍使用 960 × 600 的清楚座標，手機則會等比例縮小，不會產生水平捲動。</p>
+      </section>
+
+      <section id="ball" class="lesson-card">
+        <span class="step-label">步驟 2</span><h2>先畫出一顆球</h2>
+        <p>球需要 X、Y 座標、半徑與水平／垂直速度。使用 <code class="inline-code">arc()</code> 畫圓。</p>
+        <pre><code>const ball = {
+  x: canvas.width / 2,
+  y: 430,
+  radius: 15,
+  vx: 285,
+  vy: -310
+};
+
+ctx.beginPath();
+ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+ctx.fillStyle = '#63e6ff';
+ctx.fill();</code></pre>
+        <p><code>vx</code> 是每秒水平方向移動量，<code>vy</code> 是垂直方向移動量；負的 Y 代表向上。</p>
+      </section>
+
+      <section id="move" class="lesson-card">
+        <span class="step-label">步驟 3</span><h2>用動畫迴圈讓球移動</h2>
+        <p><code class="inline-code">requestAnimationFrame</code> 會配合螢幕更新頻率執行。利用兩幀的時間差，讓不同電腦上的球速保持一致。</p>
+        <pre><code>let lastTime = performance.now();
+
+function gameLoop(time) {
+  const delta = Math.min((time - lastTime) / 1000, 0.032);
+  lastTime = time;
+
+  ball.x += ball.vx * delta;
+  ball.y += ball.vy * delta;
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+requestAnimationFrame(gameLoop);</code></pre>
+        <p class="tip">每一幀都要先清除或重畫背景，否則球移動時會留下永久的軌跡。</p>
+      </section>
+
+      <section id="walls" class="lesson-card">
+        <span class="step-label">步驟 4</span><h2>碰到邊界就反彈</h2>
+        <p>球心不能超過「畫布尺寸減半徑」。碰到左右邊界時反轉 <code class="inline-code">vx</code>，碰到上下邊界時反轉 <code class="inline-code">vy</code>。</p>
+        <pre><code>if (ball.x + ball.radius &gt;= canvas.width) {
+  ball.x = canvas.width - ball.radius;
+  ball.vx = -Math.abs(ball.vx);
+} else if (ball.x - ball.radius &lt;= 0) {
+  ball.x = ball.radius;
+  ball.vx = Math.abs(ball.vx);
+}
+
+if (ball.y - ball.radius &lt;= 0) {
+  ball.y = ball.radius;
+  ball.vy = Math.abs(ball.vy);
+}</code></pre>
+        <p>先把球移回合法位置，再改變速度，可避免球卡在邊界上連續反轉。</p>
+      </section>
+
+      <section id="paddle" class="lesson-card">
+        <span class="step-label">步驟 5</span><h2>加入滑鼠與觸控擋板</h2>
+        <p>由於 Canvas 會隨螢幕縮放，必須把畫面上的指標座標換算成 Canvas 內部座標。</p>
+        <pre><code>function movePaddle(clientX) {
+  const rect = canvas.getBoundingClientRect();
+  const canvasX = (clientX - rect.left) *
+    (canvas.width / rect.width);
+
+  paddle.x = Math.max(0, Math.min(
+    canvas.width - paddle.width,
+    canvasX - paddle.width / 2
+  ));
+}
+
+canvas.addEventListener('pointermove', event =&gt; {
+  movePaddle(event.clientX);
+});</code></pre>
+        <p><code class="inline-code">pointermove</code> 同時支援滑鼠、觸控筆與手指，比只使用 <code>mousemove</code> 更完整。</p>
+      </section>
+
+      <section id="bricks" class="lesson-card">
+        <span class="step-label">步驟 6</span><h2>建立目標方塊與碰撞</h2>
+        <p>每個方塊保存位置、尺寸與是否仍可見。用最接近圓心的矩形座標，判斷圓與矩形是否接觸。</p>
+        <pre><code>function circleTouchesRect(circle, rect) {
+  const closestX = Math.max(
+    rect.x,
+    Math.min(circle.x, rect.x + rect.width)
+  );
+  const closestY = Math.max(
+    rect.y,
+    Math.min(circle.y, rect.y + rect.height)
+  );
+  const dx = circle.x - closestX;
+  const dy = circle.y - closestY;
+  return dx * dx + dy * dy &lt;=
+    circle.radius * circle.radius;
+}</code></pre>
+        <pre><code>if (circleTouchesRect(ball, brick)) {
+  brick.visible = false;
+  score += 100;
+  ball.vy *= -1;
+}</code></pre>
+        <p>正式版本還會比較球的上一個位置，判斷它從側面還是上下方撞擊，決定要反轉哪一個速度。</p>
+      </section>
+
+      <section id="effects" class="lesson-card">
+        <span class="step-label">步驟 7</span><h2>加入立體球、拖尾與霓虹效果</h2>
+        <p>徑向漸層讓球看起來具有高光和深度，陰影則產生能量光暈。</p>
+        <pre><code>const glow = ctx.createRadialGradient(
+  ball.x - 6, ball.y - 7, 2,
+  ball.x, ball.y, ball.radius
+);
+glow.addColorStop(0, '#ffffff');
+glow.addColorStop(0.25, '#baf7ff');
+glow.addColorStop(0.6, '#55dff5');
+glow.addColorStop(1, '#4872de');
+
+ctx.shadowColor = '#5deaff';
+ctx.shadowBlur = 22;
+ctx.fillStyle = glow;</code></pre>
+        <p>拖尾是一組較舊的球座標。越舊的座標畫得越小、越透明，就能形成速度感。</p>
+        <pre><code>trail.unshift({ x: ball.x, y: ball.y });
+if (trail.length &gt; 13) trail.pop();
+
+trail.forEach((point, index) =&gt; {
+  const opacity = 1 - index / trail.length;
+  ctx.globalAlpha = opacity * 0.2;
+  // 在 point.x、point.y 畫出較小的圓
+});</code></pre>
+      </section>
+
+      <section id="finish" class="lesson-card">
+        <span class="step-label">步驟 8</span><h2>組合成完整遊戲</h2>
+        <p>最後加入計分、剩餘目標、空白鍵暫停、完成遮罩與重新開始功能。下方直接載入你指定的 <code class="inline-code">bouncing ball/ball.html</code>。</p>
+        <div class="project-actions"><a class="button" href="bouncing%20ball/ball.html" target="_blank" rel="noopener">在新分頁開啟成品</a></div>
+        <iframe class="game-preview" src="bouncing%20ball/ball.html" title="霓虹彈跳球完整成品"></iframe>
+        <div class="exercise"><strong>延伸挑戰：</strong>加入生命值、關卡速度、特殊方塊、多顆球，或讓不同顏色的目標具有不同分數。</div>
+      </section>
+
+      <nav class="lesson-nav" aria-label="課程切換"><a href="beginner-snake.html">← 上一個實作：貪食蛇</a><a href="index.html">回首頁</a><a href="bouncing%20ball/ball.html">開啟遊戲成品 →</a></nav>
+    </article>
+  </main>
+  <footer>前端新手村・用 Canvas 做出流暢的互動遊戲</footer>
+  <script src="script.js"></script>
+</body>
+</html>

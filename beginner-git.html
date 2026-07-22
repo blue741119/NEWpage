@@ -1,0 +1,19 @@
+<!doctype html><html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Git 與 GitHub 初學者課程：學會版本控制並備份網站專案。"><title>Git 與 GitHub｜前端新手村</title><link rel="stylesheet" href="styles.css"></head><body>
+<header class="site-header"><a class="brand" href="index.html">前端新手村</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">選單</button><nav id="site-nav" class="site-nav" aria-label="主要導覽"><a href="index.html">課程首頁</a><a href="beginner-html.html">HTML</a><a href="beginner-css.html">CSS</a><a href="beginner-javascript.html">JavaScript</a><a aria-current="page" href="beginner-git.html">Git 與 GitHub</a><a href="beginner-deploy.html">網站發布</a><a href="beginner-snake.html">貪食蛇實作</a><a href="beginner-bouncing-ball.html">彈跳球實作</a><a href="beginner-card.html">翻牌配對</a><a href="beginner-zombie.html">殭屍閃避</a></nav></header>
+<main class="lesson-layout"><aside class="lesson-sidebar"><strong>本課目錄</strong><nav><a href="#difference">Git 與 GitHub</a><a href="#setup">第一次設定</a><a href="#save">儲存版本</a><a href="#github">上傳 GitHub</a><a href="#daily">日常流程</a></nav></aside><article><header class="lesson-title"><p class="eyebrow">Lesson 04・版本控制</p><h1>Git 與 GitHub</h1><p>Git 幫你保存每次修改；GitHub 則把專案存放在網路上，方便備份、分享與協作。</p></header>
+<section id="difference" class="lesson-card"><h2>1. Git 和 GitHub 有什麼不同？</h2><p><strong>Git</strong> 是安裝在電腦上的版本控制工具，就像替專案建立可以回看的存檔點。<strong>GitHub</strong> 是存放 Git 專案的網站。</p><p class="tip">提交（commit）不是上傳。提交先記錄在自己的電腦；推送（push）才會把提交上傳到 GitHub。</p></section>
+<section id="setup" class="lesson-card"><h2>2. 第一次使用 Git</h2><p>安裝 Git 後，開啟終端機並設定顯示名稱與 Email。Email 建議與 GitHub 帳號相同。</p><pre><code>git config --global user.name "你的名字"
+git config --global user.email "you@example.com"
+git config --global init.defaultBranch main</code></pre><p>接著進入網站資料夾並建立 Git 儲存庫：</p><pre><code>cd 網頁資料夾
+git init</code></pre></section>
+<section id="save" class="lesson-card"><h2>3. 建立第一個版本</h2><p><code class="inline-code">status</code> 查看改動，<code class="inline-code">add</code> 選擇要納入的檔案，<code class="inline-code">commit</code> 建立存檔點。</p><pre><code>git status
+git add .
+git commit -m "建立初學者教學網站"</code></pre><p class="tip">提交訊息要簡短描述「這次改了什麼」，例如「新增 Git 教學頁」，不要只寫 update。</p></section>
+<section id="github" class="lesson-card"><h2>4. 上傳到 GitHub</h2><ol><li>登入 GitHub，選擇 <strong>New repository</strong>。</li><li>輸入專案名稱，例如 <code class="inline-code">frontend-starter</code>。</li><li>先不要加入 README，建立空白儲存庫。</li><li>複製 GitHub 顯示的儲存庫網址，再執行以下指令。</li></ol><pre><code>git remote add origin https://github.com/你的帳號/frontend-starter.git
+git branch -M main
+git push -u origin main</code></pre><p>第一次推送可能會要求登入 GitHub。完成後重新整理儲存庫頁面，就能看到網站檔案。</p></section>
+<section id="daily" class="lesson-card"><h2>5. 之後的日常流程</h2><p>每次完成一小段有意義的修改，就執行：</p><pre><code>git status
+git add .
+git commit -m "說明這次的修改"
+git push</code></pre><div class="exercise"><strong>練習：</strong>修改首頁的一段文字，查看 <code>git status</code>，建立提交並推送到 GitHub。到 GitHub 確認提交紀錄是否出現。</div></section>
+<nav class="lesson-nav" aria-label="課程切換"><a href="beginner-javascript.html">← 上一課：JavaScript</a><a href="beginner-deploy.html">下一課：網站發布 →</a></nav></article></main><footer>前端新手村・用版本控制安心保存每一步</footer><script src="script.js"></script></body></html>

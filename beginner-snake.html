@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="從零開始製作 Canvas 森林貪食蛇遊戲的逐步教學。">
+  <title>森林貪食蛇實作｜前端新手村</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">前端新手村</a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">選單</button>
+    <nav id="site-nav" class="site-nav" aria-label="主要導覽">
+      <a href="index.html">課程首頁</a><a href="beginner-html.html">HTML</a><a href="beginner-css.html">CSS</a><a href="beginner-javascript.html">JavaScript</a><a href="beginner-git.html">Git 與 GitHub</a><a href="beginner-deploy.html">網站發布</a><a aria-current="page" href="beginner-snake.html">貪食蛇實作</a><a href="beginner-bouncing-ball.html">彈跳球實作</a><a href="beginner-card.html">翻牌配對</a><a href="beginner-zombie.html">殭屍閃避</a>
+    </nav>
+  </header>
+
+  <main class="lesson-layout">
+    <aside class="lesson-sidebar">
+      <strong>實作步驟</strong>
+      <nav><a href="#goal">成品與結構</a><a href="#canvas">1. 建立畫布</a><a href="#data">2. 建立資料</a><a href="#move">3. 讓蛇移動</a><a href="#control">4. 鍵盤控制</a><a href="#fruit">5. 果實與成長</a><a href="#collision">6. 碰撞判定</a><a href="#draw">7. 精緻造型</a><a href="#finish">8. 完成遊戲</a></nav>
+    </aside>
+
+    <article>
+      <header class="lesson-title">
+        <p class="eyebrow">Project 01・完整實作</p>
+        <h1>森林貪食蛇</h1>
+        <p>把 HTML、CSS 與 JavaScript 組合成一款完整遊戲。每一步先理解目的，再加入一小段程式碼。</p>
+        <div class="project-actions"><a class="button" href="Snake/index.html" target="_blank" rel="noopener">直接玩完整成品</a><a class="button secondary" href="#canvas">從第一步開始</a></div>
+      </header>
+
+      <section id="goal" class="lesson-card">
+        <span class="step-label">開始之前</span><h2>先拆解遊戲需要什麼</h2>
+        <div class="concept-grid"><div><strong>Canvas</strong>負責畫出遊戲場地、蛇與蘋果。</div><div><strong>陣列</strong>依序保存蛇頭到蛇尾的位置。</div><div><strong>遊戲迴圈</strong>每隔固定時間更新一次位置。</div><div><strong>事件監聽</strong>接收方向鍵、WASD 和空白鍵。</div></div>
+        <p>專案由兩個檔案組成：</p><div class="file-tree">Snake/
+├── index.html　　畫面、計分板與樣式
+└── content.js　 遊戲規則與 Canvas 繪圖</div>
+      </section>
+
+      <section id="canvas" class="lesson-card">
+        <span class="step-label">步驟 1</span><h2>建立遊戲畫布</h2>
+        <p>HTML 的 <code class="inline-code">canvas</code> 是一塊可由 JavaScript 繪圖的區域。先建立 320 × 320 像素畫布、分數文字與重新開始按鈕。</p>
+        <pre><code>&lt;p id="myScore"&gt;遊戲分數：0&lt;/p&gt;
+&lt;p id="myHighestScore"&gt;最高分數：0&lt;/p&gt;
+&lt;canvas id="myCanvas" width="320" height="320"&gt;&lt;/canvas&gt;
+&lt;button id="Start" type="button"&gt;開始新遊戲&lt;/button&gt;
+&lt;script src="content.js"&gt;&lt;/script&gt;</code></pre>
+        <p>在 JavaScript 取得畫布和 2D 繪圖工具：</p><pre><code>const canvas = document.querySelector('#myCanvas');
+const ctx = canvas.getContext('2d');
+const unit = 20;</code></pre><p class="tip"><code>unit</code> 是每次移動的距離。320 ÷ 20 = 16，因此場地共有 16 × 16 格。</p>
+      </section>
+
+      <section id="data" class="lesson-card">
+        <span class="step-label">步驟 2</span><h2>用陣列表示一條蛇</h2>
+        <p>每個物件代表蛇身的一節，第一個物件永遠是蛇頭。所有座標都保持 20 的倍數，蛇才會對齊格線。</p>
+        <pre><code>let snake = [
+  { x: 80, y: 40 }, // 蛇頭
+  { x: 60, y: 40 },
+  { x: 40, y: 40 },
+  { x: 20, y: 40 }  // 蛇尾
+];
+
+let direction = 'Right';</code></pre>
+        <p>移動的核心概念是：在陣列最前面加入新蛇頭，再移除最後一節蛇尾。蛇的長度不變，但看起來就向前移動了。</p>
+      </section>
+
+      <section id="move" class="lesson-card">
+        <span class="step-label">步驟 3</span><h2>建立遊戲迴圈，讓蛇前進</h2>
+        <p>先根據方向計算新座標，再用餘數讓蛇從右邊離開時回到左邊。</p>
+        <pre><code>function tick() {
+  const head = snake[0];
+  const newHead = {
+    x: (head.x + 20 + canvas.width) % canvas.width,
+    y: head.y
+  };
+
+  snake.unshift(newHead);
+  snake.pop();
+  drawScene();
+}
+
+const timer = setInterval(tick, 115);</code></pre>
+        <p class="tip"><code>setInterval</code> 每 115 毫秒執行一次 <code>tick</code>。數字越小，蛇移動越快。</p>
+      </section>
+
+      <section id="control" class="lesson-card">
+        <span class="step-label">步驟 4</span><h2>加入四方向鍵盤控制</h2>
+        <p>使用方向向量，把 Right、Down、Left、Up 分別轉換成 X、Y 的變化量。</p>
+        <pre><code>const directions = {
+  Right: { x: 1, y: 0 },
+  Down:  { x: 0, y: 1 },
+  Left:  { x: -1, y: 0 },
+  Up:    { x: 0, y: -1 }
+};
+
+window.addEventListener('keydown', event =&gt; {
+  const keyMap = {
+    ArrowRight: 'Right', ArrowDown: 'Down',
+    ArrowLeft: 'Left', ArrowUp: 'Up'
+  };
+  if (keyMap[event.key]) direction = keyMap[event.key];
+});</code></pre>
+        <p>正式版本還會檢查反方向：向右移動時不能立刻轉左，避免蛇頭直接撞進身體。</p>
+      </section>
+
+      <section id="fruit" class="lesson-card">
+        <span class="step-label">步驟 5</span><h2>產生果實，吃到後讓蛇成長</h2>
+        <p>隨機座標也必須對齊格線，並確認果實沒有出現在蛇身上。</p>
+        <pre><code>function pickFruitLocation() {
+  let position;
+  do {
+    position = {
+      x: Math.floor(Math.random() * 16) * unit,
+      y: Math.floor(Math.random() * 16) * unit
+    };
+  } while (snake.some(part =&gt;
+    part.x === position.x &amp;&amp; part.y === position.y
+  ));
+  return position;
+}</code></pre>
+        <p>當新蛇頭與果實座標相同時，不要移除蛇尾，蛇就會多出一節；同時增加分數並重新選擇果實位置。</p>
+        <pre><code>if (newHead.x === fruit.x &amp;&amp; newHead.y === fruit.y) {
+  score += 1;
+  fruit = pickFruitLocation();
+} else {
+  snake.pop();
+}</code></pre>
+      </section>
+
+      <section id="collision" class="lesson-card">
+        <span class="step-label">步驟 6</span><h2>判斷蛇是否撞到自己</h2>
+        <p>在加入新蛇頭前，用 <code class="inline-code">some()</code> 檢查新座標是否與身體任一節相同。</p>
+        <pre><code>const hitBody = snake.some(part =&gt;
+  part.x === newHead.x &amp;&amp; part.y === newHead.y
+);
+
+if (hitBody) {
+  clearInterval(timer);
+  gameOver = true;
+  drawScene();
+  return;
+}</code></pre>
+        <p class="tip">若這一步放在移動之後才檢查，畫面可能會多走一格；遊戲規則的執行順序非常重要。</p>
+      </section>
+
+      <section id="draw" class="lesson-card">
+        <span class="step-label">步驟 7</span><h2>把方塊畫成蛇與蘋果</h2>
+        <p>蛇身用圓角線連接每節中心，再用圓形與漸層增加立體感。蛇頭另外畫橢圓、眼睛和舌頭。</p>
+        <pre><code>ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+ctx.lineWidth = 14;
+ctx.strokeStyle = '#53ad68';
+
+ctx.beginPath();
+ctx.moveTo(bodyX, bodyY);
+ctx.lineTo(nextX, nextY);
+ctx.stroke();</code></pre>
+        <p>蘋果則用三個相疊的圓形形成果肉，再補上果梗、葉片和高光：</p>
+        <pre><code>ctx.fillStyle = '#ef3f48';
+ctx.beginPath();
+ctx.arc(cx - 4, cy, 7, 0, Math.PI * 2);
+ctx.arc(cx + 4, cy, 7, 0, Math.PI * 2);
+ctx.arc(cx, cy + 4, 7, 0, Math.PI * 2);
+ctx.fill();</code></pre>
+      </section>
+
+      <section id="finish" class="lesson-card">
+        <span class="step-label">步驟 8</span><h2>組合成完整遊戲</h2>
+        <p>最後加入最高分的 <code class="inline-code">localStorage</code>、空白鍵暫停、遊戲結束遮罩與重新開始按鈕。下方嵌入的就是 <code class="inline-code">Snake/index.html</code> 成品，可以直接操作。</p>
+        <div class="project-actions"><a class="button" href="Snake/index.html" target="_blank" rel="noopener">在新分頁開啟成品</a></div>
+        <iframe class="game-preview" src="Snake/index.html" title="森林貪食蛇完整成品"></iframe>
+        <div class="exercise"><strong>延伸挑戰：</strong>試著加入關卡速度、不同分數的水果、障礙物，或手機觸控方向鍵。每完成一項就建立一個 Git commit。</div>
+      </section>
+
+      <nav class="lesson-nav" aria-label="課程切換"><a href="beginner-deploy.html">← 上一課：網站發布</a><a href="index.html">回首頁</a><a href="Snake/index.html">開啟遊戲成品 →</a></nav>
+    </article>
+  </main>
+  <footer>前端新手村・從教學到第一款完整遊戲</footer>
+  <script src="script.js"></script>
+</body>
+</html>

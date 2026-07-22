@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="從零開始製作殭屍閃避生存遊戲的逐步教學。">
+  <title>殭屍閃避實作｜前端新手村</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="index.html">前端新手村</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">選單</button><nav id="site-nav" class="site-nav" aria-label="主要導覽"><a href="index.html">課程首頁</a><a href="beginner-html.html">HTML</a><a href="beginner-css.html">CSS</a><a href="beginner-javascript.html">JavaScript</a><a href="beginner-git.html">Git 與 GitHub</a><a href="beginner-deploy.html">網站發布</a><a href="beginner-snake.html">貪食蛇實作</a><a href="beginner-bouncing-ball.html">彈跳球實作</a><a href="beginner-card.html">翻牌配對</a><a aria-current="page" href="beginner-zombie.html">殭屍閃避</a></nav></header>
+
+  <main class="lesson-layout">
+    <aside class="lesson-sidebar"><strong>實作步驟</strong><nav><a href="#goal">遊戲拆解</a><a href="#canvas">1. 建立畫面</a><a href="#control">2. 鍵盤控制</a><a href="#spawn">3. 產生殭屍</a><a href="#chase">4. 直線與曲線</a><a href="#health">5. 血量碰撞</a><a href="#medkit">6. 醫療包</a><a href="#mutant">7. 奇異種與唾液</a><a href="#ranking">8. 排行榜</a><a href="#finish">9. 完整成品</a></nav></aside>
+    <article>
+      <header class="lesson-title"><p class="eyebrow">Project 04・Canvas 生存遊戲</p><h1>殭屍包圍戰</h1><p>利用鍵盤控制、直線與曲線軌跡、碰撞判定、生命值和瀏覽器儲存空間，完成節奏快速的生存遊戲。</p><div class="project-actions"><a class="button" href="zombie/index.html" target="_blank" rel="noopener">直接玩完整成品</a><a class="button secondary" href="#canvas">從第一步開始</a></div></header>
+
+      <section id="goal" class="lesson-card"><span class="step-label">開始之前</span><h2>把生存遊戲拆成系統</h2><div class="concept-grid"><div><strong>人物控制</strong>使用方向鍵組合水平與垂直移動。</div><div><strong>移動軌跡</strong>物件隨機選擇直線或曲線穿越場地。</div><div><strong>生命與補血</strong>碰撞扣血，醫療包回復生命。</div><div><strong>本機排名</strong>把名字和分數存在 localStorage。</div></div><div class="file-tree">zombie/
+├── index.html　 畫面、血條與對話框
+└── content.js　 遊戲迴圈、繪圖與排行榜</div></section>
+
+      <section id="canvas" class="lesson-card"><span class="step-label">步驟 1</span><h2>建立響應式遊戲畫面</h2><p>Canvas 使用固定的 960 × 600 內部座標，CSS 再依螢幕寬度縮放，因此碰撞計算不會受到手機尺寸影響。</p><pre><code>&lt;div class="health-track"&gt;
+  &lt;div id="health-fill" class="health-fill"&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;strong id="health-value"&gt;100&lt;/strong&gt;
+
+&lt;canvas id="game" width="960" height="600"&gt;&lt;/canvas&gt;</code></pre><pre><code>canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+}</code></pre><p class="tip">Canvas 保持固定內部座標，CSS 只負責縮放顯示，因此不同螢幕上的移動與碰撞規則仍然一致。</p></section>
+
+      <section id="control" class="lesson-card"><span class="step-label">步驟 2</span><h2>使用鍵盤方向鍵控制人物</h2><p>按下方向鍵時把按鍵加入集合，放開時移除。這樣可以同時按住兩個方向鍵進行斜向移動。</p><pre><code>const pressedKeys = new Set();
+
+window.addEventListener('keydown', event =&gt; {
+  if (event.key.startsWith('Arrow')) {
+    event.preventDefault();
+    pressedKeys.add(event.key);
+  }
+});
+
+window.addEventListener('keyup', event =&gt; {
+  pressedKeys.delete(event.key);
+});</code></pre><p>斜向移動前先把向量正規化，避免同時按兩個方向時速度變快。</p><pre><code>let x = Number(pressedKeys.has('ArrowRight'))
+  - Number(pressedKeys.has('ArrowLeft'));
+let y = Number(pressedKeys.has('ArrowDown'))
+  - Number(pressedKeys.has('ArrowUp'));
+
+const length = Math.hypot(x, y) || 1;
+player.x += (x / length) * player.speed * delta;
+player.y += (y / length) * player.speed * delta;</code></pre></section>
+
+      <section id="spawn" class="lesson-card"><span class="step-label">步驟 3</span><h2>從四面八方高速穿越</h2><p>先隨機選擇上、右、下、左其中一邊，設定朝畫面內的基準角度，再加入少量隨機偏移。</p><pre><code>const edge = Math.floor(Math.random() * 4);
+const startData = [
+  { x: Math.random() * width, y: -20, angle: Math.PI / 2 },
+  { x: width + 20, y: Math.random() * height, angle: Math.PI },
+  { x: Math.random() * width, y: height + 20, angle: -Math.PI / 2 },
+  { x: -20, y: Math.random() * height, angle: 0 }
+][edge];</code></pre><p>殭屍速度提高為約 125～235，生存時間越長還會額外加速。每過 20 秒，每一波生成數量翻倍；產生前會計算剩餘名額，讓場上普通殭屍最多保持在 100 隻。</p><pre><code>const waveSize = 2 ** Math.floor(elapsed / 20);
+const spawnCount = Math.min(waveSize, 100 - zombies.length);
+for (let i = 0; i &lt; spawnCount; i += 1) spawnZombie();
+
+const interval = Math.max(.17, .59 - elapsed * .004);
+const speedBoost = Math.min(elapsed * 0.9, 80);
+const speed = 125 + Math.random() * 110 + speedBoost;</code></pre></section>
+
+      <section id="chase" class="lesson-card"><span class="step-label">步驟 4</span><h2>固定走直線或曲線</h2><p>殭屍出生後不再追蹤人物。直線的轉向量為 0；曲線則每一幀慢慢改變角度。</p><pre><code>const curved = Math.random() &lt; 0.5;
+zombie.curve = curved
+  ? (Math.random() &lt; .5 ? -1 : 1) *
+    (.16 + Math.random() * .28)
+  : 0;
+
+zombie.angle += zombie.curve * delta;
+zombie.x += Math.cos(zombie.angle) * zombie.speed * delta;
+zombie.y += Math.sin(zombie.angle) * zombie.speed * delta;</code></pre><p>殭屍移出畫面邊緣後立即從陣列刪除，避免看不見的物件繼續佔用效能。</p><pre><code>const outside = zombie.x &lt; -margin ||
+  zombie.x &gt; width + margin ||
+  zombie.y &lt; -margin ||
+  zombie.y &gt; height + margin;
+
+if (outside) zombies.splice(index, 1);</code></pre></section>
+
+      <section id="health" class="lesson-card"><span class="step-label">步驟 5</span><h2>碰撞扣除 10 點生命</h2><p>人物和殭屍都視為圓形。兩個圓心的距離小於半徑總和，就代表碰撞。</p><pre><code>function touching(a, b) {
+  return Math.hypot(a.x - b.x, a.y - b.y)
+    &lt;= a.radius + b.radius;
+}
+
+if (touching(zombie, player)) {
+  player.health = Math.max(0, player.health - 10);
+}</code></pre><p>血量從 100 開始，畫面以百分比控制血條寬度；歸零時停止更新遊戲並開啟姓名輸入對話框。</p><pre><code>healthFill.style.width = `${player.health}%`;
+
+if (player.health === 0) {
+  running = false;
+  showGameOver();
+}</code></pre></section>
+
+      <section id="medkit" class="lesson-card"><span class="step-label">步驟 6</span><h2>每分鐘出現 5 個醫療包</h2><p>每 12 秒產生一個醫療包，因此一分鐘最多出現 5 次。每個醫療包會隨機選擇快／慢速度以及直線／曲線軌跡。</p><pre><code>let medkitSpawnTimer = 12;
+
+if (medkitSpawnTimer &lt;= 0) {
+  spawnMedkit();
+  medkitSpawnTimer = 12;
+}
+
+const fast = Math.random() &lt; .5;
+const speed = fast
+  ? 130 + Math.random() * 50
+  : 68 + Math.random() * 30;</code></pre><p>醫療包移出邊緣時同樣刪除；人物碰到它則回復 20 點，且不會超過 100。</p><pre><code>if (touching(medkit, player)) {
+  player.health = Math.min(100, player.health + 20);
+  bonusScore += 50;
+} else if (leftPlayArea(medkit)) {
+  medkits.splice(index, 1);
+}</code></pre></section>
+
+      <section id="mutant" class="lesson-card"><span class="step-label">步驟 7</span><h2>加入彩虹鱗片龍頭</h2><p>龍頭每 10 秒出現在下一個角落，在場上停留 30 秒。它不移動，但每 5 秒朝場地內的隨機位置投射唾液。造型參考彩虹毒龍圖，加入大型彎角、多色菱形鱗片、發光龍眼、臉側尖刺與獠牙。</p><pre><code>let mutantSpawnTimer = 10;
+
+if (mutantSpawnTimer &lt;= 0) {
+  spawnMutant();
+  mutantSpawnTimer += 10;
+}
+
+const mutant = {
+  x: corner.x,
+  y: corner.y,
+  life: 30,
+  spitTimer: 5
+};
+
+const targetX = 55 + Math.random() * (width - 110);
+const targetY = 55 + Math.random() * (height - 110);</code></pre><p>唾液不再瞄準玩家，而是隨機落在場地內。毒液會繼承龍頭顏色；落地後建立同色、半徑 87 的污染區，也就是原本半徑的 3 倍，並存在 5 秒。玩家站在裡面每秒扣 2 點，每一灘最多扣 10 點。</p><pre><code>const puddle = {
+  x: targetX,
+  y: targetY,
+  radius: 87,
+  color: spit.color,
+  life: 5,
+  damageTimer: 0,
+  totalDamage: 0
+};
+
+if (touchingPuddle &amp;&amp; puddle.totalDamage &lt; 10) {
+  puddle.damageTimer += delta;
+  if (puddle.damageTimer &gt;= 1) {
+    player.health -= 2;
+    puddle.totalDamage += 2;
+    puddle.damageTimer -= 1;
+  }
+}</code></pre></section>
+
+      <section id="ranking" class="lesson-card"><span class="step-label">步驟 8</span><h2>輸入名字並建立排行榜</h2><p>遊戲結束後把名字、分數和生存時間加入陣列，依分數排序，只保存前 10 名。</p><pre><code>const entries = JSON.parse(
+  localStorage.getItem('zombieSurvivorRanking')
+) || [];
+
+entries.push({ name, score, time });
+entries.sort((a, b) =&gt; b.score - a.score);
+
+localStorage.setItem(
+  'zombieSurvivorRanking',
+  JSON.stringify(entries.slice(0, 10))
+);</code></pre><p class="tip">排行榜只保存在目前的瀏覽器裝置。若要讓所有玩家共用排名，下一步可以串接 Supabase 資料庫。</p></section>
+
+      <section id="finish" class="lesson-card"><span class="step-label">步驟 9</span><h2>組合成完整生存遊戲</h2><p>成品加入方向鍵控制、每 20 秒生成數量翻倍、100 隻上限、直線與曲線軌跡、離場刪除、每分鐘 5 個醫療包、每 10 秒毒龍、5 秒吐液、3 倍污染範圍、10 點污染傷害、暫停、姓名輸入與前 10 名排行榜。下方可直接遊玩。</p><div class="project-actions"><a class="button" href="zombie/index.html" target="_blank" rel="noopener">在新分頁開啟成品</a></div><iframe class="game-preview" src="zombie/index.html" title="殭屍包圍戰完整成品"></iframe><div class="exercise"><strong>延伸挑戰：</strong>加入武器、毒龍飛行、不同龍族技能、障礙物，或將排行榜改成 Supabase 線上排名。</div></section>
+
+      <nav class="lesson-nav" aria-label="課程切換"><a href="beginner-card.html">← 上一個實作：翻牌配對</a><a href="index.html">回首頁</a><a href="zombie/index.html">開啟遊戲成品 →</a></nav>
+    </article>
+  </main>
+  <footer>前端新手村・在殭屍包圍中留下你的生存紀錄</footer>
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!doctype html><html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="HTML 初學者課程：學會建立網頁結構。"><title>HTML 入門｜前端新手村</title><link rel="stylesheet" href="styles.css"></head><body>
+<header class="site-header"><a class="brand" href="index.html">前端新手村</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">選單</button><nav id="site-nav" class="site-nav" aria-label="主要導覽"><a href="index.html">課程首頁</a><a aria-current="page" href="beginner-html.html">HTML</a><a href="beginner-css.html">CSS</a><a href="beginner-javascript.html">JavaScript</a><a href="beginner-git.html">Git 與 GitHub</a><a href="beginner-deploy.html">網站發布</a><a href="beginner-snake.html">貪食蛇實作</a><a href="beginner-bouncing-ball.html">彈跳球實作</a><a href="beginner-card.html">翻牌配對</a><a href="beginner-zombie.html">殭屍閃避</a></nav></header>
+<main class="lesson-layout"><aside class="lesson-sidebar"><strong>本課目錄</strong><nav><a href="#structure">頁面骨架</a><a href="#text">文字標籤</a><a href="#media">圖片與連結</a><a href="#practice">動手練習</a></nav></aside><article><header class="lesson-title"><p class="eyebrow">Lesson 01・結構</p><h1>HTML 入門</h1><p>HTML 像房子的骨架：它告訴瀏覽器哪些內容是標題、段落、圖片與連結。</p></header>
+<section id="structure" class="lesson-card"><h2>1. 建立頁面骨架</h2><p>每個 HTML 文件都從文件類型開始，內容分成 <code class="inline-code">head</code> 與 <code class="inline-code">body</code>。</p><pre><code>&lt;!doctype html&gt;
+&lt;html lang="zh-Hant-TW"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8"&gt;
+  &lt;title&gt;我的第一個網頁&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  網頁上看得到的內容放在這裡
+&lt;/body&gt;
+&lt;/html&gt;</code></pre><p class="tip">大部分標籤成對出現，例如 <code>&lt;p&gt;內容&lt;/p&gt;</code>；前面是開始標籤，後面是結束標籤。</p></section>
+<section id="text" class="lesson-card"><h2>2. 標題與段落</h2><p><code class="inline-code">h1</code> 是頁面最重要的標題，<code class="inline-code">p</code> 代表一個段落。</p><div class="preview"><h1>小林的作品集</h1><p>我正在學習製作網頁，這是我的第一個作品。</p></div><pre><code>&lt;h1&gt;小林的作品集&lt;/h1&gt;
+&lt;p&gt;我正在學習製作網頁，這是我的第一個作品。&lt;/p&gt;</code></pre></section>
+<section id="media" class="lesson-card"><h2>3. 圖片與連結</h2><p>圖片使用 <code class="inline-code">img</code>，連結使用 <code class="inline-code">a</code>。替圖片寫清楚的 <code class="inline-code">alt</code>，讓無法看到圖片的人也能理解內容。</p><pre><code>&lt;img src="photo.jpg" alt="小林在書桌前寫程式"&gt;
+&lt;a href="https://example.com"&gt;查看我的作品&lt;/a&gt;</code></pre></section>
+<section id="practice" class="lesson-card"><h2>4. 動手練習</h2><div class="exercise"><strong>任務：</strong>建立一張個人名片，加入一個主標題、一段自我介紹、一張圖片與一個連結。完成後直接用瀏覽器開啟檔案。</div></section>
+<nav class="lesson-nav" aria-label="課程切換"><a href="index.html">← 課程首頁</a><a href="beginner-css.html">下一課：CSS →</a></nav></article></main><footer>前端新手村・HTML 是每個網頁的起點</footer><script src="script.js"></script></body></html>

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="從零開始製作五關翻牌記憶配對遊戲的逐步教學。">
+  <title>翻牌配對實作｜前端新手村</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="index.html">前端新手村</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">選單</button><nav id="site-nav" class="site-nav" aria-label="主要導覽"><a href="index.html">課程首頁</a><a href="beginner-html.html">HTML</a><a href="beginner-css.html">CSS</a><a href="beginner-javascript.html">JavaScript</a><a href="beginner-git.html">Git 與 GitHub</a><a href="beginner-deploy.html">網站發布</a><a href="beginner-snake.html">貪食蛇實作</a><a href="beginner-bouncing-ball.html">彈跳球實作</a><a aria-current="page" href="beginner-card.html">翻牌配對</a><a href="beginner-zombie.html">殭屍閃避</a></nav></header>
+
+  <main class="lesson-layout">
+    <aside class="lesson-sidebar"><strong>實作步驟</strong><nav><a href="#goal">遊戲拆解</a><a href="#html">1. 建立畫面</a><a href="#levels">2. 設定關卡</a><a href="#deck">3. 產生牌組</a><a href="#render">4. 顯示卡牌</a><a href="#flip">5. 翻牌比較</a><a href="#score">6. 得分過關</a><a href="#style">7. 翻牌動畫</a><a href="#finish">8. 完整成品</a></nav></aside>
+    <article>
+      <header class="lesson-title"><p class="eyebrow">Project 03・DOM 狀態管理</p><h1>星際翻牌配對</h1><p>用陣列建立成對圖案、隨機洗牌，再管理兩張已翻開卡牌的狀態，完成五個漸進關卡。</p><div class="project-actions"><a class="button" href="card/index.html" target="_blank" rel="noopener">直接玩完整成品</a><a class="button secondary" href="#html">從第一步開始</a></div></header>
+
+      <section id="goal" class="lesson-card"><span class="step-label">開始之前</span><h2>遊戲需要哪些狀態？</h2><div class="concept-grid"><div><strong>牌組</strong>每個圖案都要出現兩次。</div><div><strong>翻牌狀態</strong>記住第一張和第二張卡牌。</div><div><strong>鎖定狀態</strong>比較期間禁止翻第三張。</div><div><strong>關卡資料</strong>依序使用 6、8、10、12、14 張。</div></div><div class="file-tree">card/
+├── index.html　 遊戲畫面與卡牌樣式
+└── content.js　 關卡、洗牌與配對規則</div></section>
+
+      <section id="html" class="lesson-card"><span class="step-label">步驟 1</span><h2>建立資訊列與卡牌區</h2><p>HTML 只準備容器；卡牌會依關卡由 JavaScript 動態產生。</p><pre><code>&lt;div class="hud"&gt;
+  &lt;strong id="level"&gt;1 / 5&lt;/strong&gt;
+  &lt;strong id="score"&gt;0&lt;/strong&gt;
+  &lt;strong id="moves"&gt;0&lt;/strong&gt;
+&lt;/div&gt;
+
+&lt;section id="board" class="board"&gt;&lt;/section&gt;
+&lt;button id="restart"&gt;重新開始&lt;/button&gt;</code></pre></section>
+
+      <section id="levels" class="lesson-card"><span class="step-label">步驟 2</span><h2>設定五個關卡</h2><p>陣列中的每個數字就是該關的卡牌總數。全部都是偶數，才能兩兩配對。</p><pre><code>const levelCounts = [6, 8, 10, 12, 14];
+let currentLevel = 0;
+
+const cardCount = levelCounts[currentLevel];
+const pairCount = cardCount / 2;</code></pre><p class="tip">第一關有 3 組圖案，第五關則有 7 組圖案。</p></section>
+
+      <section id="deck" class="lesson-card"><span class="step-label">步驟 3</span><h2>製作成對牌組並洗牌</h2><p>先從圖案庫取出需要的組數，每個圖案複製兩張，最後使用 Fisher–Yates 演算法洗牌。</p><pre><code>const pairs = symbols.slice(0, pairCount).flatMap(
+  (symbol, pairIndex) =&gt; [
+    { ...symbol, pairIndex },
+    { ...symbol, pairIndex }
+  ]
+);</code></pre><pre><code>function shuffle(items) {
+  const result = [...items];
+  for (let i = result.length - 1; i &gt; 0; i -= 1) {
+    const random = Math.floor(Math.random() * (i + 1));
+    [result[i], result[random]] = [result[random], result[i]];
+  }
+  return result;
+}</code></pre></section>
+
+      <section id="render" class="lesson-card"><span class="step-label">步驟 4</span><h2>把牌組轉成按鈕</h2><p>每張卡牌都是可用鍵盤操作的 <code class="inline-code">button</code>，配對編號放在 <code>data-pair</code>。</p><pre><code>function createCard(data) {
+  const card = document.createElement('button');
+  card.type = 'button';
+  card.className = 'card';
+  card.dataset.pair = data.pairIndex;
+  card.innerHTML = `
+    &lt;span class="card-back"&gt;&lt;/span&gt;
+    &lt;span class="card-front"&gt;${data.icon}&lt;/span&gt;`;
+  return card;
+}</code></pre></section>
+
+      <section id="flip" class="lesson-card"><span class="step-label">步驟 5</span><h2>翻兩張後比較圖案</h2><p>第一張先暫存；第二張翻開後比較兩張的配對編號。比較期間用鎖定狀態阻止使用者繼續翻牌。</p><pre><code>let firstCard = null;
+let secondCard = null;
+let boardLocked = false;
+
+function flipCard(card) {
+  if (boardLocked || card === firstCard) return;
+  card.classList.add('flipped');
+
+  if (!firstCard) {
+    firstCard = card;
+    return;
+  }
+
+  secondCard = card;
+  boardLocked = true;
+  const matched = firstCard.dataset.pair ===
+    secondCard.dataset.pair;
+}</code></pre><p>如果不同，等待約 850 毫秒再蓋回去，讓玩家有時間看清第二張圖案。</p></section>
+
+      <section id="score" class="lesson-card"><span class="step-label">步驟 6</span><h2>配對成功、得分與過關</h2><p>配對成功後保留翻開、停用按鈕並加分。找到的組數等於本關總組數時顯示過關畫面。</p><pre><code>matchedPairs += 1;
+score += 100 + currentLevel * 25;
+firstCard.disabled = true;
+secondCard.disabled = true;
+
+if (matchedPairs === cardCount / 2) {
+  showLevelResult();
+}</code></pre><pre><code>function advanceLevel() {
+  currentLevel += 1;
+  startLevel();
+}</code></pre><p class="tip">關卡越高，每組配對的分數也越高；完成第五關後可重新挑戰第一關。</p></section>
+
+      <section id="style" class="lesson-card"><span class="step-label">步驟 7</span><h2>用 CSS 製作翻牌動畫</h2><p>卡牌內層保留 3D 空間，正面先轉到背後；加入 <code class="inline-code">flipped</code> 後整張旋轉 180 度。</p><pre><code>.card-inner {
+  transform-style: preserve-3d;
+  transition: transform .48s ease;
+}
+
+.card-front {
+  transform: rotateY(180deg);
+}
+
+.card.flipped .card-inner,
+.card.matched .card-inner {
+  transform: rotateY(180deg);
+}</code></pre><p>卡片使用彈性 Grid，在桌機、平板和手機上會自動調整欄數與尺寸。</p></section>
+
+      <section id="finish" class="lesson-card"><span class="step-label">步驟 8</span><h2>累積遊戲時間並建立前 10 名</h2><p>玩家第一次翻牌才開始計時；完成一關後暫停，下一關第一次翻牌再繼續。五關的實際遊玩時間會累積在一起。</p><pre><code>let totalElapsedMs = 0;
+let levelStartedAt = null;
+
+function stopLevelTimer() {
+  totalElapsedMs += performance.now() - levelStartedAt;
+  levelStartedAt = null;
+}</code></pre><p>完成第五關後輸入名字，依完成時間由少到多排序，只保存前 10 名。</p><pre><code>entries.push({ name, timeMs: totalElapsedMs });
+entries.sort((a, b) =&gt; a.timeMs - b.timeMs);
+
+localStorage.setItem(
+  'cardMemoryTimeRanking',
+  JSON.stringify(entries.slice(0, 10))
+);</code></pre><p>完整成品還包含關卡進度、總分、翻牌次數、即時計時、配對提示與重新開始功能。下方可直接遊玩。</p><div class="project-actions"><a class="button" href="card/index.html" target="_blank" rel="noopener">在新分頁開啟成品</a></div><iframe class="game-preview" src="card/index.html" title="星際翻牌配對完整成品"></iframe><div class="exercise"><strong>延伸挑戰：</strong>加入每關倒數、線上排行榜、難度選擇、音效或讓玩家自行上傳卡牌圖片。</div></section>
+
+      <nav class="lesson-nav" aria-label="課程切換"><a href="beginner-bouncing-ball.html">← 上一個實作：彈跳球</a><a href="index.html">回首頁</a><a href="card/index.html">開啟遊戲成品 →</a></nav>
+    </article>
+  </main>
+  <footer>前端新手村・用狀態管理完成第一款記憶遊戲</footer>
+  <script src="script.js"></script>
+</body>
+</html>

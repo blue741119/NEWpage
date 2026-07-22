@@ -1,0 +1,24 @@
+<!doctype html><html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="CSS 初學者課程：為網頁加入樣式與版面。"><title>CSS 入門｜前端新手村</title><link rel="stylesheet" href="styles.css"></head><body>
+<header class="site-header"><a class="brand" href="index.html">前端新手村</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">選單</button><nav id="site-nav" class="site-nav" aria-label="主要導覽"><a href="index.html">課程首頁</a><a href="beginner-html.html">HTML</a><a aria-current="page" href="beginner-css.html">CSS</a><a href="beginner-javascript.html">JavaScript</a><a href="beginner-git.html">Git 與 GitHub</a><a href="beginner-deploy.html">網站發布</a><a href="beginner-snake.html">貪食蛇實作</a><a href="beginner-bouncing-ball.html">彈跳球實作</a><a href="beginner-card.html">翻牌配對</a><a href="beginner-zombie.html">殭屍閃避</a></nav></header>
+<main class="lesson-layout"><aside class="lesson-sidebar"><strong>本課目錄</strong><nav><a href="#connect">連結樣式</a><a href="#selector">選擇器</a><a href="#box">盒模型</a><a href="#layout">版面配置</a></nav></aside><article><header class="lesson-title"><p class="eyebrow">Lesson 02・外觀</p><h1>CSS 入門</h1><p>CSS 像房子的裝潢：它控制顏色、字體、空間，以及內容如何排列。</p></header>
+<section id="connect" class="lesson-card"><h2>1. 把 CSS 連到 HTML</h2><p>建立 <code class="inline-code">style.css</code>，再把下面這行放進 HTML 的 <code class="inline-code">head</code>。</p><pre><code>&lt;link rel="stylesheet" href="style.css"&gt;</code></pre></section>
+<section id="selector" class="lesson-card"><h2>2. 選擇器與屬性</h2><p>選擇器指出要改誰，大括號裡則寫要改成什麼樣子。</p><pre><code>h1 {
+  color: #5b4ae8;
+  font-size: 40px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+}</code></pre><p class="tip"><code>h1</code> 選取所有主標題；前面有句點的 <code>.card</code> 選取 class 為 card 的元素。</p></section>
+<section id="box" class="lesson-card"><h2>3. 理解盒模型</h2><p>每個元素都是一個盒子：內容外面依序是內距 <code class="inline-code">padding</code>、邊框 <code class="inline-code">border</code>、外距 <code class="inline-code">margin</code>。</p><pre><code>.card {
+  padding: 24px;
+  border: 1px solid #dfe4ef;
+  margin: 20px 0;
+}</code></pre></section>
+<section id="layout" class="lesson-card"><h2>4. 用 Grid 排版</h2><p>Grid 很適合排列卡片。螢幕夠寬時顯示三欄，較窄時可再用媒體查詢改成一欄。</p><div class="preview" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px"><span class="demo-button">HTML</span><span class="demo-button">CSS</span><span class="demo-button">JS</span></div><pre><code>.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}</code></pre><div class="exercise"><strong>任務：</strong>替上一課的個人名片加入背景色、內距、圓角與陰影，再調整標題顏色。</div></section>
+<nav class="lesson-nav" aria-label="課程切換"><a href="beginner-html.html">← 上一課：HTML</a><a href="beginner-javascript.html">下一課：JavaScript →</a></nav></article></main><footer>前端新手村・CSS 讓結構成為設計</footer><script src="script.js"></script></body></html>

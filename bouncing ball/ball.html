@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="使用滑鼠或觸控板操作的霓虹彈跳球遊戲。">
+  <title>霓虹彈跳球</title>
+  <style>
+    :root{--ink:#f6f8ff;--muted:#aeb8d5;--panel:#131a35;--line:#2d3d70;--cyan:#63e6ff;--violet:#9277ff}
+    *{box-sizing:border-box}
+    body{min-height:100vh;margin:0;padding:28px 18px;color:var(--ink);background:radial-gradient(circle at 50% -10%,#263771 0,#11172f 40%,#080b18 100%);font-family:"Microsoft JhengHei",system-ui,sans-serif;text-align:center}
+    main{width:min(100%,1040px);margin:auto}
+    .eyebrow{margin:0 0 5px;color:var(--cyan);font-size:.78rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
+    h1{margin:0;font-size:clamp(2rem,7vw,3.3rem);line-height:1.15;letter-spacing:-.03em}
+    .subtitle{margin:8px 0 20px;color:var(--muted)}
+    .hud{display:flex;justify-content:space-between;gap:10px;width:min(100%,960px);margin:0 auto 10px}
+    .hud p{margin:0;padding:8px 14px;color:#dfe7ff;background:rgba(19,26,53,.85);border:1px solid var(--line);border-radius:99px;font-weight:800}
+    .game-shell{position:relative;width:min(100%,960px);margin:auto;padding:8px;background:linear-gradient(135deg,#6476dc,#3de2eb 48%,#8b69e8);border-radius:20px;box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 45px rgba(99,230,255,.12)}
+    canvas{display:block;width:100%;height:auto;background:#080c1e;border-radius:13px;touch-action:none;cursor:crosshair}
+    .controls{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;margin-top:18px}
+    .help{margin:0;color:var(--muted);font-size:.93rem}
+    button{min-height:42px;padding:9px 16px;color:#101630;background:linear-gradient(135deg,#77ecff,#a791ff);border:0;border-radius:10px;font:900 .95rem "Microsoft JhengHei",system-ui,sans-serif;cursor:pointer;box-shadow:0 8px 22px rgba(68,102,220,.3)}
+    button:hover{filter:brightness(1.08);transform:translateY(-1px)}
+    button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+    @media(max-width:600px){body{padding:20px 10px}.subtitle{font-size:.92rem}.hud p{flex:1;padding:7px 9px;font-size:.88rem}.game-shell{padding:5px;border-radius:14px}.controls{align-items:stretch}.help{width:100%}}
+    @media(prefers-reduced-motion:reduce){button{transition:none}}
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Neon Bounce</p>
+    <h1>霓虹彈跳球</h1>
+    <p class="subtitle">移動能量擋板，擊破全部核心方塊</p>
+    <div class="hud" aria-live="polite">
+      <p id="score">分數：0</p>
+      <p id="remaining">剩餘目標：18</p>
+    </div>
+    <div class="game-shell">
+      <canvas id="myCanvas" width="960" height="600" aria-label="彈跳球遊戲區域"></canvas>
+    </div>
+    <div class="controls">
+      <p class="help">移動滑鼠或手指控制擋板・空白鍵暫停</p>
+      <button id="restart" type="button">重新開始</button>
+    </div>
+  </main>
+  <script src="./content.js"></script>
+</body>
+</html>

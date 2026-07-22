@@ -1,0 +1,17 @@
+<!doctype html><html lang="zh-Hant-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="JavaScript 初學者課程：為網頁加入互動。"><title>JavaScript 入門｜前端新手村</title><link rel="stylesheet" href="styles.css"></head><body>
+<header class="site-header"><a class="brand" href="index.html">前端新手村</a><button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">選單</button><nav id="site-nav" class="site-nav" aria-label="主要導覽"><a href="index.html">課程首頁</a><a href="beginner-html.html">HTML</a><a href="beginner-css.html">CSS</a><a aria-current="page" href="beginner-javascript.html">JavaScript</a><a href="beginner-git.html">Git 與 GitHub</a><a href="beginner-deploy.html">網站發布</a><a href="beginner-snake.html">貪食蛇實作</a><a href="beginner-bouncing-ball.html">彈跳球實作</a><a href="beginner-card.html">翻牌配對</a><a href="beginner-zombie.html">殭屍閃避</a></nav></header>
+<main class="lesson-layout"><aside class="lesson-sidebar"><strong>本課目錄</strong><nav><a href="#connect">連結程式</a><a href="#variable">變數與函式</a><a href="#event">點擊事件</a><a href="#practice">動手練習</a></nav></aside><article><header class="lesson-title"><p class="eyebrow">Lesson 03・互動</p><h1>JavaScript 入門</h1><p>JavaScript 像房子的電力系統：它讓按鈕、表單與畫面能對使用者的操作做出反應。</p></header>
+<section id="connect" class="lesson-card"><h2>1. 把 JavaScript 連到 HTML</h2><p>建立 <code class="inline-code">script.js</code>，並在 <code class="inline-code">body</code> 結束標籤前載入它。</p><pre><code>&lt;script src="script.js"&gt;&lt;/script&gt;</code></pre></section>
+<section id="variable" class="lesson-card"><h2>2. 變數與函式</h2><p>變數保存資料，函式則把一組動作包起來，之後可以重複呼叫。</p><pre><code>const name = '小林';
+
+function greet() {
+  return `你好，${name}！`;
+}</code></pre></section>
+<section id="event" class="lesson-card"><h2>3. 回應點擊事件</h2><p>先選取 HTML 元素，再用 <code class="inline-code">addEventListener</code> 監聽點擊。</p><div class="preview"><button id="hello-button" class="demo-button" type="button">點我測試</button><p id="hello-result" class="demo-result" aria-live="polite"></p></div><pre><code>const button = document.querySelector('#hello-button');
+const result = document.querySelector('#hello-result');
+
+button.addEventListener('click', () =&gt; {
+  result.textContent = '成功了！';
+});</code></pre></section>
+<section id="practice" class="lesson-card"><h2>4. 動手練習</h2><div class="exercise"><strong>任務：</strong>在個人名片加入「顯示聯絡方式」按鈕。第一次點擊顯示 Email，再次點擊則隱藏。</div><h3>接下來可以學什麼？</h3><p>完成三課後，可以繼續練習表單驗證、陣列、物件、非同步資料，以及 Git 版本控制。</p></section>
+<nav class="lesson-nav" aria-label="課程切換"><a href="beginner-css.html">← 上一課：CSS</a><a href="beginner-git.html">下一課：Git 與 GitHub →</a></nav></article></main><footer>前端新手村・讓你的頁面真正動起來</footer><script src="script.js"></script></body></html>

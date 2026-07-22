@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="使用鍵盤方向鍵操作的殭屍閃避生存遊戲。">
+  <title>殭屍包圍戰</title>
+  <style>
+    :root{--ink:#f3f7f2;--muted:#a8b8aa;--panel:rgba(16,27,22,.9);--line:#385443;--green:#7be495;--red:#ff6675;--gold:#ffd166}
+    *{box-sizing:border-box}
+    body{min-height:100vh;margin:0;padding:24px 14px;color:var(--ink);background:radial-gradient(circle at 50% -10%,#30493a 0,#111c16 46%,#070c09 100%);font-family:"Microsoft JhengHei",system-ui,sans-serif;text-align:center}
+    main{width:min(100%,1020px);margin:auto}
+    .eyebrow{margin:0 0 3px;color:#9bf3ae;font-size:.76rem;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
+    h1{margin:0;font-size:clamp(2rem,7vw,3.35rem);line-height:1.15;letter-spacing:-.035em}.subtitle{margin:7px 0 17px;color:var(--muted)}
+    .hud{display:grid;grid-template-columns:1.35fr .7fr .7fr;gap:10px;width:min(100%,960px);margin:0 auto 10px}.stat{display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:8px 13px;background:var(--panel);border:1px solid var(--line);border-radius:12px}.stat-label{color:var(--muted);font-size:.8rem}.stat strong{font-size:1.05rem}.health-track{position:relative;width:min(270px,60%);height:13px;background:#321b21;border:1px solid #69404a;border-radius:99px;overflow:hidden}.health-fill{width:100%;height:100%;background:linear-gradient(90deg,#ff5266,#ff9b72);border-radius:inherit;transition:width .2s ease}.health-value{min-width:37px}
+    .game-shell{position:relative;width:min(100%,960px);margin:auto;padding:7px;background:linear-gradient(145deg,#617c68,#263d2e 55%,#792f3e);border:1px solid #7c9d85;border-radius:20px;box-shadow:0 25px 80px rgba(0,0,0,.48)}canvas{display:block;width:100%;height:auto;background:#101811;border-radius:13px;touch-action:none;cursor:crosshair}
+    .controls{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:11px;margin-top:16px}.help{margin:0;color:var(--muted);font-size:.9rem}.button{min-height:42px;padding:9px 16px;color:#132319;background:linear-gradient(135deg,#9df0ae,#e3ff9b);border:0;border-radius:10px;font:900 .95rem "Microsoft JhengHei",system-ui,sans-serif;cursor:pointer}.button:hover{filter:brightness(1.07);transform:translateY(-1px)}.button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+    .overlay{position:fixed;z-index:20;inset:0;display:grid;place-items:center;padding:18px;background:rgba(3,8,5,.76);backdrop-filter:blur(8px)}.overlay[hidden]{display:none}.dialog{width:min(100%,470px);max-height:min(90vh,690px);padding:28px;background:linear-gradient(145deg,#17271d,#281923);border:1px solid #597663;border-radius:22px;box-shadow:0 30px 100px rgba(0,0,0,.65);overflow:auto}.dialog-icon{font-size:3.2rem}.dialog h2{margin:6px 0 8px;font-size:1.85rem}.dialog p{margin:0 0 18px;color:var(--muted)}.name-form{display:grid;gap:10px}.name-form[hidden],.ranking-view[hidden],.intro-view[hidden]{display:none}.name-form input{width:100%;height:46px;padding:0 14px;color:var(--ink);background:#0e1711;border:1px solid #536c5a;border-radius:10px;font:inherit}.ranking{margin:14px 0 18px;padding:0;list-style:none;text-align:left}.ranking li{display:grid;grid-template-columns:38px 1fr auto;gap:8px;padding:9px 5px;border-bottom:1px solid rgba(130,160,139,.2)}.ranking .rank{color:var(--gold);font-weight:900}.ranking .points{color:#a8f4b8;font-weight:900}.ranking .empty{display:block;color:var(--muted);text-align:center}
+    @media(max-width:650px){body{padding:18px 8px}.hud{grid-template-columns:1fr 1fr}.hud .health-stat{grid-column:1/-1}.game-shell{padding:4px;border-radius:14px}.subtitle{font-size:.9rem}.controls{align-items:stretch}.help{width:100%}}
+    @media(max-width:420px){.stat{min-height:43px;padding:6px}.health-track{width:55%}.dialog{padding:23px 18px}}
+    @media(prefers-reduced-motion:reduce){.health-fill{transition:none}.button{transition:none}}
+  </style>
+</head>
+<body>
+  <main>
+    <p class="eyebrow">Last Survivor</p><h1>殭屍包圍戰</h1><p class="subtitle">閃躲殭屍、收集醫療包，看看你能生存多久</p>
+    <section class="hud" aria-label="遊戲資訊">
+      <div class="stat health-stat"><span class="stat-label">生命</span><div class="health-track"><div id="health-fill" class="health-fill"></div></div><strong id="health-value" class="health-value">100</strong></div>
+      <div class="stat"><span class="stat-label">分數</span><strong id="score">0</strong></div>
+      <div class="stat"><span class="stat-label">生存時間</span><strong id="time">0.0 秒</strong></div>
+    </section>
+    <div class="game-shell"><canvas id="game" width="960" height="600" aria-label="殭屍閃避遊戲區域"></canvas></div>
+    <div class="controls"><p class="help">方向鍵控制・空白鍵暫停・每 20 秒殭屍生成數量加倍（最多 100 隻）</p><button id="restart" class="button" type="button">重新開始</button></div>
+  </main>
+
+  <section id="overlay" class="overlay">
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
+      <div id="dialog-icon" class="dialog-icon">🧍</div><h2 id="dialog-title">準備開始求生</h2>
+      <div id="intro-view" class="intro-view"><p>使用方向鍵控制人物。每過 20 秒，每波出現的殭屍數量翻倍，場上最多 100 隻。彩虹鱗片龍頭每 10 秒從角落出現、每 5 秒朝場地內的隨機位置吐液，並在 30 秒後退場；污染區會呈現龍頭的毒液顏色，範圍擴大 3 倍，每灘最多扣 10 點。</p><button id="start" class="button" type="button">開始遊戲</button></div>
+      <form id="name-form" class="name-form" hidden><p id="final-score"></p><label for="player-name">輸入名字加入排行榜</label><input id="player-name" name="playerName" maxlength="12" autocomplete="nickname" placeholder="求生者名字" required><button class="button" type="submit">登記成績</button></form>
+      <div id="ranking-view" class="ranking-view" hidden><p id="ranking-summary"></p><ol id="ranking" class="ranking"></ol><button id="play-again" class="button" type="button">再玩一局</button></div>
+    </div>
+  </section>
+  <script src="content.js"></script>
+</body>
+</html>

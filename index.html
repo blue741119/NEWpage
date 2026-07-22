@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="給網頁開發初學者的 HTML、CSS 與 JavaScript 入門課程。">
+  <title>前端新手村｜初學者課程</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="home-page">
+  <header class="site-header">
+    <a class="brand" href="index.html">前端新手村</a>
+    <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">選單</button>
+    <nav id="site-nav" class="site-nav" aria-label="主要導覽">
+      <a aria-current="page" href="index.html">課程首頁</a>
+      <a href="beginner-html.html">HTML</a>
+      <a href="beginner-css.html">CSS</a>
+      <a href="beginner-javascript.html">JavaScript</a>
+      <a href="beginner-git.html">Git 與 GitHub</a>
+      <a href="beginner-deploy.html">網站發布</a>
+      <a href="beginner-snake.html">貪食蛇實作</a>
+      <a href="beginner-bouncing-ball.html">彈跳球實作</a>
+      <a href="beginner-card.html">翻牌配對</a>
+      <a href="beginner-zombie.html">殭屍閃避</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Frontend Starter Guide</p>
+        <h1>從零開始，做出你的第一個網頁</h1>
+        <p>不用先懂程式。依序學會網頁的結構、外觀與互動，每一課都有範例和小練習。</p>
+        <a class="button" href="beginner-html.html">開始第一課</a>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="course-title">
+      <div class="section-heading">
+        <p class="eyebrow">Beginner Path</p>
+        <h2 id="course-title">初學者學習路線</h2>
+        <p>建議先完成五堂基礎課，再用貪食蛇專案把所學組合起來。</p>
+      </div>
+      <div class="course-grid">
+        <article class="course-card">
+          <span class="number">01</span><p class="tag">結構</p>
+          <h3>HTML 入門</h3>
+          <p>認識標題、段落、圖片、連結和語意化標籤，建立完整頁面骨架。</p>
+          <a class="text-link" href="beginner-html.html">進入 HTML 課程 <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="course-card">
+          <span class="number">02</span><p class="tag">外觀</p>
+          <h3>CSS 入門</h3>
+          <p>學會選擇器、顏色、間距、盒模型與版面配置，讓頁面更好看。</p>
+          <a class="text-link" href="beginner-css.html">進入 CSS 課程 <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="course-card">
+          <span class="number">03</span><p class="tag">互動</p>
+          <h3>JavaScript 入門</h3>
+          <p>理解變數、函式、事件和 DOM，讓按鈕真的能回應使用者。</p>
+          <a class="text-link" href="beginner-javascript.html">進入 JavaScript 課程 <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="course-card">
+          <span class="number">04</span><p class="tag">版本控制</p>
+          <h3>Git 與 GitHub</h3>
+          <p>記錄每次修改、建立版本，並將作品安全地保存到 GitHub。</p>
+          <a class="text-link" href="beginner-git.html">進入 Git 與 GitHub 課程 <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="course-card">
+          <span class="number">05</span><p class="tag">正式上線</p>
+          <h3>網站發布教學</h3>
+          <p>使用 GitHub Pages 免費發布網站，取得可以分享給別人的網址。</p>
+          <a class="text-link" href="beginner-deploy.html">進入網站發布課程 <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="course-card project-card">
+          <span class="number">06</span><p class="tag">完整實作</p>
+          <h3>森林貪食蛇</h3>
+          <p>一步一步組合 Canvas、鍵盤事件、遊戲迴圈、碰撞判定、計分與精緻繪圖。</p>
+          <a class="text-link" href="beginner-snake.html">開始貪食蛇實作 <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="course-card project-card">
+          <span class="number">07</span><p class="tag">Canvas 實作</p>
+          <h3>霓虹彈跳球</h3>
+          <p>拆解動畫迴圈、向量移動、碰撞反彈、滑鼠觸控與 Canvas 立體繪圖。</p>
+          <a class="text-link" href="beginner-bouncing-ball.html">開始彈跳球實作 <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="course-card project-card">
+          <span class="number">08</span><p class="tag">DOM 實作</p>
+          <h3>星際翻牌配對</h3>
+          <p>用陣列、洗牌、事件監聽與狀態管理，完成五關漸進式記憶配對遊戲。</p>
+          <a class="text-link" href="beginner-card.html">開始翻牌遊戲實作 <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="course-card project-card">
+          <span class="number">09</span><p class="tag">生存挑戰</p>
+          <h3>殭屍包圍戰</h3>
+          <p>用滑鼠或手指閃躲追蹤殭屍、收集醫療包，並把生存分數寫入排行榜。</p>
+          <a class="text-link" href="beginner-zombie.html">開始殭屍遊戲實作 <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </section>
+
+    <section class="section compact">
+      <div class="panel">
+        <div><p class="eyebrow">最終挑戰</p><h2>你將完成一款真正能玩的網頁遊戲</h2></div>
+        <ul class="check-list"><li>HTML Canvas 遊戲畫面</li><li>鍵盤控制與碰撞判定</li><li>計分、最高分與暫停功能</li></ul>
+      </div>
+    </section>
+  </main>
+  <footer>前端新手村・從第一個標籤開始累積作品</footer>
+  <script src="script.js"></script>
+</body>
+</html>
